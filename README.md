@@ -191,5 +191,71 @@ Each line in the `Dockerfile` == a `layer`. And an image is created by several `
 And we shall organize the `Dockerfile` in a way such that Stable instructions are on the top, and the Changing instructions are at the bottom.  
 The Docker will then automatically figure out how to cache the layers and make it fast!
 
+
+### Removing/Cleaning up Images:  
+
+Run this to see all the images you have  
+```bash
+docker images
+``` 
+Very often, you will see a lot of losse images (the ones with no TAG and no REPOSITORY). Those are the layers with no relationship with TAG images.  
+An easy way to clean them is this:
+```bash
+docker image prune
+# OR you can remove it by specifing
+docker image rm <REPOSITORY>
+docker image rm <IMAGE ID>
+```
+
+And similarly for containers:
+```bash
+docker ps -a # to see all the containers
+docker container prune # to remove all the unnecessary ones
+```
+
+### Tagging your Images correctly
+-> "latest"  
+It is fine to use "latest" in development, but it won't be a good idea for production. Using it in production can confuse you about which version you are really running (esp during upgrade and roll-back.)
+So, always use an explicit tag:
+```bash
+# tag it in build
+docker build -t <REPOSITORY NAME>:<tag> .
+docker build -t react-app:1 . # for example
+
+# or tag it after build
+docker image tag <REPO NAME>:<current Tag> <REPO NAME>:<new Tag>
+docker image tag react-app:latest react-app:10 # example
+
+# untag
+docker image remove <REPOSITORY NAME>:<tag to remove>
+```
+
+### Share Your Image Via Docker Hub
+1. Create a repository on your hub.docker.com
+2. Update your tag
+```bash
+docker image tag <IMAGE ID> <hub repo name>/<REPO NAME>:<tag>
+# for example
+docker image tag 5228 tobyatlarge/react-app:1
+```
+3. Login and push to hub
+```bash
+docker login
+docker push tobyatlarge/react-app:1
+```
+
+If in the future you want to update and repush:
+update the file -> update the tag -> docker push
+
+
+### Saving and Loading 
+Another way to share your image without docker hub is by zip:
+```bash
+# 1. save the image into a tar file
+docker image save -o react-app.tar  react-app:3
+
+# 2. to load:
+docker image load -i react-app.tar
+```
 ---
 ##
