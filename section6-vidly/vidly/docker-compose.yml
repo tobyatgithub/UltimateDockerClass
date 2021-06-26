@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  web:
+    build: ./frontend
+    ports:
+      # <container>:<local>
+      - 3000:3000
+  api:
+    build: ./backend
+    ports:
+      - 3001:3001
+    environment:
+      DB_URL: mongodb://db/vidly
+  db: # the name here can bu changed,
+    # but it will be used as the reference to it
+    # for example in the DB_URL
+    image: mongo:4.0-xenial
+    ports:
+      # mongo db default port == 27017
+      - 27017:27017
+    volumes:
+      - vidly:/data/db
+
+volumes:
+  vidly:
