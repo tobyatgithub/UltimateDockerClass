@@ -1,0 +1,13 @@
+.Input {
+  border-radius: 5px;
+  border: 2px solid transparent;
+  font-size: inherit;
+  outline: none;
+  padding: 10px;
+  transition: border .2s;
+  width: 100%;
+}
+
+.Input:focus {
+  border: 2px solid #1897f9;
+}

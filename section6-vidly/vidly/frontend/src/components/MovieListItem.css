@@ -1,0 +1,29 @@
+.MovieListItem {
+  align-items: center;
+  background: #fff;
+  border-left: 5px solid #1897f9;
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+.MovieListItem__Delete {
+  background: none;
+  border-radius: 100%;
+  border: 0;
+  cursor: pointer;
+  height: 25px;
+  outline: none;
+  padding: 5px;
+  width: 25px;
+}
+
+.MovieListItem__Delete img {
+  width: 100%;
+}
+
+.MovieListItem__Delete:hover {
+  background: #f0f0f0;
+}
