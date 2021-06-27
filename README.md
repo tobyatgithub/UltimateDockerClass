@@ -295,3 +295,86 @@ docker image rm $(docker image ls -q)
 ```
 
 (or you can do this from the mac docker GUI -> debug button)
+
+Now, in order to run multiple containers at the same time, the easiest way is to use `docker-compose`.
+
+Example: `docker-compose.yml`  
+Notice that the `yml` file is whitespace sensitive.
+
+```yml
+version: "3.8"
+
+services:
+  web:
+    # this is the folder for this container that folder
+    # shall include everything a docker container will need
+    build: ./frontend
+    ports:
+      # <container>:<local>
+      - 3000:3000
+    volumes:
+      - ./frontend:/app
+  # and we can define test for web or api here as well,
+  # just notice that it might be a little bit slow.
+  web-test:
+    # here we don't want to rebuild an image, we want to re-use one
+    image: vidly_web
+    # and yes we still want quick mount
+    volumes:
+      - ./frontend:/app
+    # this is the line for test
+    command: npm test
+  api:
+    build: ./backend
+    ports:
+      - 3001:3001
+    environment: # set env environment
+      DB_URL: mongodb://db/vidly
+    volumes: # easy volume mount
+      - ./backend:/app
+    # you can also overwrite the CMD
+    # command: ./wait-for db:27017 && migrate-mongo up && npm start
+    # equivalently
+    command: ./docker-entrypoint.sh
+  db: # the name here can bu changed,
+    # but it will be used as the reference to it
+    # for example in the DB_URL
+    image: mongo:4.0-xenial
+    ports:
+      # mongo db default port == 27017
+      - 27017:27017
+    volumes:
+      - vidly:/data/db
+
+volumes:
+  vidly:
+```
+
+After that, in the same directory, run these commands to build, inspect, and tear down.
+
+```bash
+# build it
+docker-compose build
+
+# start the build
+docker-compose up
+
+# and you can combine, -d = detached
+docker-compose up --build -d
+# show all the docker-compose running
+docker-compose ps
+# and to turn everything down
+docker-compose down
+
+# show logs of our containres
+docker-compose logs
+# show logs of one container, -f = follow
+docker logs <container id> -f
+```
+
+### Other things you may want to do:
+
+1. To make the change in your source code quickly being reflected on the `docker-compose`:  
+   Run `>$ npm install` in the `/backend` and `/frontend` folders.
+
+2. To make the database show correctly (a.k.a. migrate the database) via `npm run db:up` <- this is an alias defined in our `package.json file`, OR run `migrate-mongo up`.
